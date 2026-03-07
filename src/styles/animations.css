@@ -1,0 +1,340 @@
+/* ============================================
+   ANIMATIONS — Micro-animasi untuk anak-anak
+   bounce, shake, pop, float, sparkle, dll
+   ============================================ */
+
+/* --- Bounce (tombol muncul) --- */
+@keyframes bounce-in {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+
+    70% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-bounce-in {
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+/* Stagger delay untuk multiple items */
+.animate-bounce-in:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.animate-bounce-in:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.animate-bounce-in:nth-child(3) {
+    animation-delay: 0.25s;
+}
+
+.animate-bounce-in:nth-child(4) {
+    animation-delay: 0.35s;
+}
+
+.animate-bounce-in:nth-child(5) {
+    animation-delay: 0.45s;
+}
+
+/* --- Shake (jawaban salah) --- */
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-12px);
+    }
+
+    40% {
+        transform: translateX(12px);
+    }
+
+    60% {
+        transform: translateX(-8px);
+    }
+
+    80% {
+        transform: translateX(8px);
+    }
+}
+
+.animate-shake {
+    animation: shake 0.5s ease;
+}
+
+/* --- Pop (kartu di-tap) --- */
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.animate-pop {
+    animation: pop 0.3s ease;
+}
+
+/* --- Float (dekorasi melayang) --- */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-15px) rotate(5deg);
+    }
+
+    50% {
+        transform: translateY(-8px) rotate(-3deg);
+    }
+
+    75% {
+        transform: translateY(-20px) rotate(3deg);
+    }
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+/* --- Sparkle (bintang berkilau) --- */
+@keyframes sparkle {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+.animate-sparkle {
+    animation: sparkle 1s ease-in-out infinite;
+}
+
+/* --- Slide Up (halaman masuk dari bawah) --- */
+@keyframes slide-up {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+}
+
+/* --- Fade In --- */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.5s ease forwards;
+}
+
+/* --- Pulse (tombol aktif) --- */
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.animate-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* --- Balloon Rise (game balon) --- */
+@keyframes balloon-rise {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(75vh) rotate(5deg);
+    }
+
+    50% {
+        transform: translateY(50vh) rotate(-5deg);
+    }
+
+    75% {
+        transform: translateY(25vh) rotate(3deg);
+    }
+
+    100% {
+        transform: translateY(-100px) rotate(-3deg);
+    }
+}
+
+.animate-balloon-rise {
+    animation: balloon-rise var(--balloon-speed, 6s) linear forwards;
+}
+
+/* --- Balloon Pop (balon meletus) --- */
+@keyframes balloon-pop {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.animate-balloon-pop {
+    animation: balloon-pop 0.3s ease-out forwards;
+}
+
+/* --- Correct Answer Glow --- */
+@keyframes correct-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(105, 219, 124, 0.7);
+    }
+
+    50% {
+        box-shadow: 0 0 20px 10px rgba(105, 219, 124, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(105, 219, 124, 0);
+    }
+}
+
+.animate-correct {
+    animation: correct-glow 0.8s ease;
+}
+
+/* --- Wrong Answer (warna merah sesaat) --- */
+@keyframes wrong-flash {
+
+    0%,
+    100% {
+        background-color: inherit;
+    }
+
+    50% {
+        background-color: #FF8787;
+    }
+}
+
+.animate-wrong {
+    animation: wrong-flash 0.5s ease;
+}
+
+/* --- Star Collect (bintang terkumpul) --- */
+@keyframes star-collect {
+    0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.3) rotate(10deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+}
+
+.animate-star {
+    animation: star-collect 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+/* --- Number Zoom (angka besar muncul) --- */
+@keyframes number-zoom {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-number {
+    animation: number-zoom 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+}
+
+/* --- Wiggle (elemen minta perhatian) --- */
+@keyframes wiggle {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-5deg);
+    }
+
+    75% {
+        transform: rotate(5deg);
+    }
+}
+
+.animate-wiggle {
+    animation: wiggle 0.5s ease-in-out 3;
+}

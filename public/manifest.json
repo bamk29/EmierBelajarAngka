@@ -1,0 +1,10 @@
+{
+    "name": "Ayo Belajar Angka",
+    "short_name": "BelajarAngka",
+    "description": "Aplikasi belajar angka dan berhitung untuk anak usia 3-5 tahun",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FFF9C4",
+    "theme_color": "#FFE066",
+    "lang": "id"
+}

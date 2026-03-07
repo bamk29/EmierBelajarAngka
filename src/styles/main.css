@@ -1,0 +1,646 @@
+/* ============================================
+   DESIGN SYSTEM — Aplikasi Berhitung Anak
+   Palette: pastel cerah, font: Nunito
+   Target: mobile-first, max-width 480px
+   ============================================ */
+
+/* --- CSS Variables / Token --- */
+:root {
+  /* Warna utama */
+  --color-yellow: #FFE066;
+  --color-blue: #74C0FC;
+  --color-green: #69DB7C;
+  --color-pink: #FF8787;
+  --color-purple: #DA77F2;
+  --color-orange: #FFA94D;
+
+  /* Background */
+  --bg-gradient: linear-gradient(135deg, #E0F7FA 0%, #FFF9C4 50%, #F8BBD0 100%);
+  --bg-card: rgba(255, 255, 255, 0.92);
+
+  /* Teks */
+  --text-dark: #2D3436;
+  --text-light: #636E72;
+  --text-white: #FFFFFF;
+
+  /* Shadow */
+  --shadow-btn: 0 6px 0 rgba(0, 0, 0, 0.15);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0 12px 32px rgba(0, 0, 0, 0.12);
+
+  /* Sizing */
+  --btn-min-height: 80px;
+  --btn-radius: 20px;
+  --card-radius: 24px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+}
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  color: var(--text-dark);
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- App Container --- */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--spacing-md);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Confetti Canvas (Overlay) --- */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* --- Tombol Utama (3D Style) --- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  min-height: var(--btn-min-height);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--btn-radius);
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-white);
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Variasi warna tombol */
+.btn-blue {
+  background: linear-gradient(135deg, #74C0FC, #4DABF7);
+}
+
+.btn-yellow {
+  background: linear-gradient(135deg, #FFE066, #FFD43B);
+  color: var(--text-dark);
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #69DB7C, #51CF66);
+}
+
+.btn-pink {
+  background: linear-gradient(135deg, #FF8787, #FF6B6B);
+}
+
+.btn-purple {
+  background: linear-gradient(135deg, #DA77F2, #CC5DE8);
+}
+
+.btn-orange {
+  background: linear-gradient(135deg, #FFA94D, #FF922B);
+}
+
+/* Tombol kecil */
+.btn-sm {
+  min-height: 56px;
+  font-size: 1.1rem;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 16px;
+}
+
+/* Tombol emoji (ikon) besar */
+.btn .btn-icon {
+  font-size: 2rem;
+}
+
+/* --- Kartu --- */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:active {
+  transform: scale(0.97);
+}
+
+/* --- Header Halaman --- */
+.page-header {
+  text-align: center;
+  padding: var(--spacing-md) 0;
+}
+
+.page-header h1 {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: var(--spacing-sm);
+}
+
+.page-header .subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+/* --- Tombol Kembali --- */
+.back-btn {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: none;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  z-index: 10;
+  transition: transform 0.15s;
+}
+
+.back-btn:active {
+  transform: scale(0.9);
+}
+
+/* --- Level Selector --- */
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+}
+
+.level-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--spacing-md);
+  border: none;
+  border-radius: var(--btn-radius);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  transition: transform 0.15s, box-shadow 0.15s;
+  min-height: 90px;
+}
+
+.level-btn:active {
+  transform: scale(0.95);
+}
+
+.level-btn .level-icon {
+  font-size: 2rem;
+}
+
+.level-btn .level-stars {
+  font-size: 0.75rem;
+  color: var(--color-orange);
+}
+
+/* Level terkunci */
+.level-btn.locked {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+}
+
+.level-btn.locked .level-icon::after {
+  content: '🔒';
+  font-size: 1rem;
+  position: relative;
+  top: -5px;
+}
+
+/* Level aktif / sudah selesai */
+.level-btn.completed {
+  border: 3px solid var(--color-green);
+}
+
+.level-btn.current {
+  border: 3px solid var(--color-blue);
+  box-shadow: 0 0 0 4px rgba(116, 192, 252, 0.3);
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: var(--spacing-md) 0;
+}
+
+.progress-bar .fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-green), var(--color-blue));
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+/* --- Angka Besar (kartu belajar) --- */
+.big-number {
+  font-size: 8rem;
+  font-weight: 900;
+  text-align: center;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--color-blue), var(--color-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- Dot Representation (titik visual angka) --- */
+.dots-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: var(--spacing-md);
+}
+
+.dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+/* --- Grid Jawaban --- */
+.answer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.answer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  border: 3px solid transparent;
+  border-radius: var(--btn-radius);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  font-family: 'Nunito', sans-serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.2s, background 0.2s;
+}
+
+.answer-btn:active {
+  transform: scale(0.93);
+}
+
+.answer-btn.correct {
+  background: var(--color-green);
+  color: white;
+  border-color: #37B24D;
+}
+
+.answer-btn.wrong {
+  background: var(--color-pink);
+  color: white;
+  border-color: #E03131;
+}
+
+/* --- Objek Emoji (visual counting) --- */
+.emoji-objects {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: var(--spacing-lg);
+  min-height: 100px;
+}
+
+.emoji-group-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.emoji-row-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.group-label {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-light);
+  background: var(--color-yellow);
+  padding: 2px 8px;
+  border-radius: 8px;
+  min-width: 40px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.group-total-label {
+  margin-top: 8px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--color-blue);
+  background: white;
+  padding: 4px 16px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
+}
+
+
+/* --- Bintang (Star Rating) --- */
+.stars-display {
+  font-size: 2rem;
+  text-align: center;
+  letter-spacing: 4px;
+}
+
+/* --- Balon (Game Pop Balon) --- */
+.balloon-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  border-radius: var(--card-radius);
+  background: linear-gradient(180deg, #E3F2FD 0%, #BBDEFB 100%);
+}
+
+.balloon {
+  position: absolute;
+  width: 64px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: white;
+  cursor: pointer;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transition: transform 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.balloon:active {
+  transform: scale(1.2);
+}
+
+/* --- Hasil / Skor --- */
+.result-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  text-align: center;
+  flex: 1;
+}
+
+.result-screen .score-big {
+  font-size: 4rem;
+  font-weight: 900;
+}
+
+.result-screen .message {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* --- Floating Bubbles (dekorasi) --- */
+.floating-bubbles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.15;
+}
+
+/* --- Parental Gate --- */
+.parental-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl);
+}
+
+.parental-gate .instruction {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  text-align: center;
+}
+
+/* --- Dashboard Stats --- */
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--spacing-md);
+}
+
+.stat-card .stat-icon {
+  font-size: 2rem;
+}
+
+.stat-card .stat-info {
+  flex: 1;
+}
+
+.stat-card .stat-label {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+.stat-card .stat-value {
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+/* --- Utilitas --- */
+.text-center {
+  text-align: center;
+}
+
+.mt-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+  margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mt-xl {
+  margin-top: var(--spacing-xl);
+}
+
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.w-full {
+  width: 100%;
+}
+
+/* --- Soal cerita --- */
+.soal-cerita {
+  background: var(--bg-card);
+  border-radius: var(--card-radius);
+  padding: var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  box-shadow: var(--shadow-card);
+}
+
+/* --- Speaker Button --- */
+.speaker-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-yellow);
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-btn);
+  transition: transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.speaker-btn:active {
+  transform: translateY(3px) scale(0.95);
+}
+
+/* --- Responsif --- */
+@media (max-width: 360px) {
+  :root {
+    --btn-min-height: 68px;
+  }
+
+  .btn {
+    font-size: 1.2rem;
+  }
+
+  .big-number {
+    font-size: 6rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 481px) {
+  #app {
+    padding: var(--spacing-lg);
+  }
+}
