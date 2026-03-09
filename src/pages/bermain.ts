@@ -307,7 +307,7 @@ function renderPopBalon(container: HTMLElement): void {
 
   container.innerHTML = `
     <button class="back-btn" id="back-levels">◀</button>
-    <div style="padding-top:48px;">
+    <div style="padding-top:48px; padding-bottom:16px;">
       <div class="text-center mb-md">
         <span style="font-size:0.9rem; font-weight:700; color:var(--text-light);">
           🎈 Pop Balon — Ronde ${ronde + 1}/${totalRonde}
@@ -319,58 +319,63 @@ function renderPopBalon(container: HTMLElement): void {
         <span>${ronde + 1}/${totalRonde}</span>
       </div>
     </div>
-    <div class="soal-cerita animate-slide-up" style="margin-top:16px; display:flex; flex-direction:column; align-items:center;">
-      <p style="font-size:1.3rem; font-weight:800; margin-bottom:12px;">Dengarkan &amp; Cari Balonnya! 🎈</p>
-      <button id="btn-instruksi" class="speaker-btn" style="width:80px; height:80px; font-size:2.5rem; background:var(--color-blue); color:white; border-radius:50%; box-shadow:0 6px 15px rgba(0,0,0,0.2);">🔊</button>
+
+    <!-- Card instruksi ringkas -->
+    <div style="
+      background:rgba(255,255,255,0.7);
+      border-radius:20px;
+      margin:0 16px 12px;
+      padding:14px 16px;
+      display:flex; align-items:center; gap:12px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.08);
+    ">
+      <button id="btn-instruksi" class="speaker-btn" style="
+        width:56px; height:56px; flex-shrink:0;
+        font-size:1.8rem; background:var(--color-blue);
+        color:white; border-radius:50%;
+        box-shadow:0 4px 10px rgba(0,0,0,0.2);
+      ">🔊</button>
+      <p style="font-size:1.1rem; font-weight:800; margin:0; color:var(--text-main);">
+        Dengarkan &amp; Cari Balonnya! 🎈
+      </p>
     </div>
 
-    <!--
-      Card container + Grid 3 kolom x 2 baris — setiap balon punya sel sendiri.
-    -->
+    <!-- Card balon: grid 3×2 bersih tanpa stagger -->
     <div style="
-      background: rgba(255,255,255,0.55);
-      backdrop-filter: blur(8px);
-      border-radius: 28px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      border: 1.5px solid rgba(255,255,255,0.7);
-      padding: 20px 16px 24px;
-      margin: 16px;
+      background:rgba(255,255,255,0.55);
+      backdrop-filter:blur(8px);
+      border-radius:24px;
+      box-shadow:0 8px 28px rgba(0,0,0,0.10);
+      border:1.5px solid rgba(255,255,255,0.75);
+      padding:20px 12px;
+      margin:0 16px;
     ">
-      <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:14px; letter-spacing:0.04em;">
-        🎈 TAP BALON YANG BENAR!
+      <p style="text-align:center; font-size:0.8rem; color:var(--text-muted); font-weight:700;
+         letter-spacing:0.05em; margin:0 0 14px;">
+        TAP BALON YANG BENAR!
       </p>
       <div style="
         display:grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap:12px;
+        grid-template-columns:repeat(3,1fr);
+        gap:16px;
       ">
         ${balonAngka.map((n, i) => {
     const color = colors[i % colors.length];
     const delay = (i * 0.1).toFixed(1);
-    // Baris ganjil (index 0,1,2) lebih atas; baris genap (3,4,5) lebih bawah
-    const rowOffset = i < 3 ? '0px' : '28px';
     return `
-          <div style="display:flex; justify-content:center; margin-top:${rowOffset};">
-            <div class="balloon animate-balloon-rise" data-angka="${n}"
-                 style="
-                   background:${color};
-                   position:relative;
-                   animation-delay:${delay}s;
-                   --balloon-speed:1.6s;
-                 ">
-              <span style="
-                font-size:1.6rem; font-weight:900;
-                color:white;
-                text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-                pointer-events:none;
-              ">${n}</span>
+            <div style="display:flex; justify-content:center;">
+              <div class="balloon animate-balloon-rise" data-angka="${n}"
+                   style="background:${color}; position:relative; animation-delay:${delay}s; --balloon-speed:1.6s;">
+                <span style="font-size:1.6rem; font-weight:900; color:white;
+                  text-shadow:0 1px 4px rgba(0,0,0,0.5); pointer-events:none;">${n}</span>
+              </div>
             </div>
-          </div>
-        `;
+          `;
   }).join('')}
       </div>
     </div>
   `;
+
 
   // TTS instruksi
   const playInstruksi = () => speakInstruksi(`Cari angka ${getNamaAngka(target)}!`);
