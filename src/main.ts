@@ -11,6 +11,7 @@ import { renderBelajar } from './pages/belajar';
 import { renderUjian } from './pages/ujian';
 import { renderBermain } from './pages/bermain';
 import { renderDashboard } from './pages/dashboard';
+import { renderBelajarInteraktif } from './pages/belajarInteraktif';
 import { preloadSFX, playSFX } from './sfx';
 import { initScreenTime } from './screenTime';
 
@@ -26,6 +27,7 @@ type RouteRenderer = (container: HTMLElement, params?: Record<string, string>) =
 const routes: Record<string, RouteRenderer> = {
   'home': renderHome,
   'belajar': renderBelajar,
+  'interaktif': renderBelajarInteraktif,
   'ujian': renderUjian,
   'bermain': renderBermain,
   'dashboard': renderDashboard

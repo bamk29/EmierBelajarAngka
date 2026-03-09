@@ -54,11 +54,11 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
     {
         name: 'Pemula',
         icon: '🌱',
-        range: [1, 100],
+        range: [1, 200],
         soalCount: 5,
         rondeCount: 5,
-        requiredStars: 20,
-        description: 'Mengenal angka 1-100',
+        requiredStars: 10,
+        description: 'Mengenal angka 1-200',
         color: '#69DB7C'
     },
     {

@@ -36,11 +36,16 @@ export function renderHome(container: HTMLElement): void {
         </div>
       </div>
 
-      <!-- 3 Tombol Menu Utama -->
+      <!-- Tombol Menu Utama -->
       <div class="flex-col w-full" style="gap:16px;">
+        <button id="btn-interaktif" class="btn btn-purple animate-bounce-in" style="animation-delay:0.10s">
+          <span class="btn-icon">🧩</span>
+          Belajar Sambil Bermain
+        </button>
+
         <button id="btn-belajar" class="btn btn-blue animate-bounce-in" style="animation-delay:0.15s">
           <span class="btn-icon">📖</span>
-          Belajar & Mengenal
+          Belajar Lanjutan
         </button>
 
         <button id="btn-ujian" class="btn btn-yellow animate-bounce-in" style="animation-delay:0.25s">
@@ -62,6 +67,10 @@ export function renderHome(container: HTMLElement): void {
   `;
 
   // Event listeners
+  document.getElementById('btn-interaktif')!.addEventListener('click', () => {
+    navigateTo('interaktif');
+  });
+
   document.getElementById('btn-belajar')!.addEventListener('click', () => {
     navigateTo('belajar');
   });

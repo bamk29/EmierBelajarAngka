@@ -70,9 +70,9 @@ function generateCards(level: number, currentStars: number): BelajarCard[] {
 
   switch (level) {
     case 1: {
-      const start = stars * 5 + 1;
-      for (let i = start; i < start + 5; i++) {
-        buatKartuAngka(i, true);
+      const start = stars * 20 + 1; // Kumon-style chunks of 20
+      for (let i = start; i < start + 20; i++) {
+        buatKartuAngka(i, i <= 50); // Emojis only up to 50
       }
       break;
     }
@@ -278,11 +278,18 @@ function renderSubLevelSelector(container: HTMLElement): void {
       cursor = 'pointer';
     }
 
+    let label = `${i + 1}`;
+    let fontSize = '0.8rem';
+    if (currentLevel === 1) {
+      label = `${i * 20 + 1}-${(i + 1) * 20}`;
+      fontSize = '0.65rem';
+    }
+
     gridHtml += `
       <button class="sublevel-btn ${cls}" data-sublevel="${i}" ${!isUnlocked ? 'disabled' : ''}
-              style="width:60px; height:60px; border-radius:12px; border:none; background:${bg}; color:white; font-size:1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:${cursor}; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
+              style="width:75px; height:60px; border-radius:12px; border:none; background:${bg}; color:white; font-size:1.5rem; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:${cursor}; box-shadow:0 4px 6px rgba(0,0,0,0.1);">
         <span>${icon}</span>
-        <span style="font-size:0.8rem; font-weight:bold; margin-top:2px;">${i + 1}</span>
+        <span style="font-size:${fontSize}; font-weight:bold; margin-top:2px;">${label}</span>
       </button>
     `;
   }

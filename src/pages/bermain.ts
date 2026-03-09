@@ -23,12 +23,12 @@ function getDynamicRange(level: number): [number, number] {
   const mp = loadProgress().bermain;
   const stars = mp.stars[level - 1] || 0;
 
-  const maxStars = 19;
+  const maxStars = level === 1 ? 9 : 19;
   const progressRatio = Math.min(1, stars / maxStars);
 
-  if (level === 1) { // Pop Balon: 1-100
-    const windowSize = Math.floor(5 + (15 * progressRatio));
-    const min = Math.floor(1 + (79 * progressRatio));
+  if (level === 1) { // Pop Balon: 1-200
+    const windowSize = Math.floor(10 + (20 * progressRatio));
+    const min = Math.floor(1 + (169 * progressRatio));
     return [min, min + windowSize];
   } else if (level === 2) { // Bandingkan: 10-99
     const min = Math.floor(10 + (60 * progressRatio));
@@ -45,9 +45,10 @@ function getDynamicRange(level: number): [number, number] {
     const windowSize = Math.floor(5 + (10 * progressRatio));
     const min = Math.floor(1 + (10 * progressRatio));
     return [min, Math.min(20, min + windowSize)];
-  } else { // Level 6 (Pola): multiplier/difficulty
-    const mult = Math.floor(3 + (7 * progressRatio));
-    return [1, mult];
+  } else { // Level 6 (Kasir Cilik): Rentang harga 1rb - 20rb
+    const min = Math.floor(1 + (5 * progressRatio)); // Mulai dari 1-6rb
+    const max = Math.floor(min + 4 + (10 * progressRatio)); // Sampai 10-20rb
+    return [min, max];
   }
 }
 
@@ -183,8 +184,9 @@ function renderKasir(container: HTMLElement): void {
 
   // Logic: Total Harga acak, Pembayar kasih uang bulat, hitung Kembalian
   const totalPrice = randRange(minPrice, maxPrice);
-  const paymentPotentials = [5, 10, 20, 50, 100].map(v => v * Math.ceil(totalPrice / (v || 1)));
-  const payment = Math.min(...paymentPotentials.filter(p => p >= totalPrice && p <= totalPrice + 20));
+  const bills = [5, 10, 20, 50];
+  const possiblePayments = bills.filter(b => b > totalPrice);
+  const payment = possiblePayments.length > 0 ? possiblePayments[0] : Math.ceil(totalPrice / 10) * 10 + 10;
   const change = payment - totalPrice;
 
   // Generate options for change (one is correct)
