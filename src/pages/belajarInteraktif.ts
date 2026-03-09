@@ -8,6 +8,7 @@ import { playSFX } from '../sfx';
 import { speak, speakInstruksi, getNamaAngka } from '../tts';
 import { randRange, shuffle } from '../utils';
 import { fireConfetti } from '../confetti';
+import { renderBelajarLanjutan } from './belajarLanjutan';
 
 const EMOJIS = ['🍎', '🌟', '🐣', '🌸', '🍊', '🎈', '🦋', '🍇', '🐠', '🌺'];
 
@@ -35,20 +36,36 @@ function renderMenu(container: HTMLElement): void {
       <h1 style="color:var(--color-purple); font-size:2.2rem;">Belajar Sambil Bermain</h1>
       <p class="subtitle" style="font-size:1.1rem;">Pilih permainan yang kamu inginkan!</p>
     </div>
-    
-    <div style="display:flex; flex-direction:column; gap:20px; padding:20px; max-width:400px; margin:0 auto;" class="animate-fade-in">
-      <button id="btn-tap" class="btn btn-blue" style="font-size:1.3rem; padding:20px; border-radius:20px; box-shadow: 0 6px 0 #1b6ca8; text-align:left;">
-        🧩 Menyentuh Benda
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:20px; max-width:600px; margin:0 auto;" class="animate-fade-in">
+      
+      <!-- Phase 5 Games -->
+      <button id="btn-tap" class="btn btn-blue" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #1b6ca8; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">🧩</span> Menyentuh
       </button>
-      <button id="btn-drag" class="btn btn-orange" style="font-size:1.3rem; padding:20px; border-radius:20px; box-shadow: 0 6px 0 #c25f00; text-align:left;">
-        🧺 Memasukkan Benda
+      <button id="btn-drag" class="btn btn-orange" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #c25f00; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">🧺</span> Memasukkan
       </button>
-      <button id="btn-tebak" class="btn btn-green" style="font-size:1.3rem; padding:20px; border-radius:20px; box-shadow: 0 6px 0 #2b8a3e; text-align:left;">
-        🎈 Tebak Angka
+      <button id="btn-tebak" class="btn btn-green" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #2b8a3e; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">🎈</span> Tebak Angka
       </button>
-      <button id="btn-sort" class="btn btn-purple" style="font-size:1.3rem; padding:20px; border-radius:20px; box-shadow: 0 6px 0 #5c2b92; text-align:left; background-color:var(--color-purple); color:white;">
-        🧠 Klasifikasi (Logika)
+      <button id="btn-sort" class="btn" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #5c2b92; background-color:var(--color-purple); color:white; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">🧠</span> Klasifikasi
       </button>
+
+      <!-- Phase 6 Games -->
+      <button id="btn-subitizing" class="btn" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #c2185b; background-color:#e91e63; color:white; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">⚡</span> Tebak Cepat
+      </button>
+      <button id="btn-numberbonds" class="btn btn-blue" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #1b6ca8; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">🐟</span> Pecah Belah
+      </button>
+      <button id="btn-tenframe" class="btn btn-orange" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #c25f00; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">🥚</span> Keranjang 10
+      </button>
+      <button id="btn-timbangan" class="btn btn-green" style="font-size:1.1rem; padding:16px; border-radius:20px; box-shadow: 0 6px 0 #2b8a3e; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <span style="font-size:2rem;">⚖</span> Timbangan
+      </button>
+
     </div>
   `;
 
@@ -84,6 +101,19 @@ function renderMenu(container: HTMLElement): void {
     currentNumber = 1; // Used for round progression in sorting
     renderBelajarInteraktif(container);
   });
+
+  const goLanjutan = (m: string) => {
+    playSFX('click');
+    renderBelajarLanjutan(container, m as any, () => {
+      currentMode = 'menu';
+      renderBelajarInteraktif(container);
+    });
+  };
+
+  document.getElementById('btn-subitizing')!.addEventListener('click', () => goLanjutan('subitizing'));
+  document.getElementById('btn-numberbonds')!.addEventListener('click', () => goLanjutan('numberbonds'));
+  document.getElementById('btn-tenframe')!.addEventListener('click', () => goLanjutan('tenframe'));
+  document.getElementById('btn-timbangan')!.addEventListener('click', () => goLanjutan('timbangan'));
 }
 
 // ==========================================
