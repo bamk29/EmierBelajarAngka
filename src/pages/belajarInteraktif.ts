@@ -12,7 +12,7 @@ import { fireConfetti } from '../confetti';
 const EMOJIS = ['🍎', '🌟', '🐣', '🌸', '🍊', '🎈', '🦋', '🍇', '🐠', '🌺'];
 
 let currentNumber = 1;
-let currentMode: 'menu' | 'tap' | 'drag' | 'tebak' = 'menu';
+let currentMode: 'menu' | 'tap' | 'drag' | 'tebak' | 'sort' = 'menu';
 
 export function renderBelajarInteraktif(container: HTMLElement): void {
   if (currentMode === 'menu') {
@@ -23,6 +23,8 @@ export function renderBelajarInteraktif(container: HTMLElement): void {
     renderMasukKeranjang(container);
   } else if (currentMode === 'tebak') {
     renderMencariAngka(container);
+  } else if (currentMode === 'sort') {
+    renderKlasifikasi(container);
   }
 }
 
@@ -43,6 +45,9 @@ function renderMenu(container: HTMLElement): void {
       </button>
       <button id="btn-tebak" class="btn btn-green" style="font-size:1.3rem; padding:20px; border-radius:20px; box-shadow: 0 6px 0 #2b8a3e; text-align:left;">
         🎈 Tebak Angka
+      </button>
+      <button id="btn-sort" class="btn btn-purple" style="font-size:1.3rem; padding:20px; border-radius:20px; box-shadow: 0 6px 0 #5c2b92; text-align:left; background-color:var(--color-purple); color:white;">
+        🧠 Klasifikasi (Logika)
       </button>
     </div>
   `;
@@ -70,6 +75,13 @@ function renderMenu(container: HTMLElement): void {
     playSFX('click');
     currentMode = 'tebak';
     currentNumber = 1;
+    renderBelajarInteraktif(container);
+  });
+
+  document.getElementById('btn-sort')!.addEventListener('click', () => {
+    playSFX('click');
+    currentMode = 'sort';
+    currentNumber = 1; // Used for round progression in sorting
     renderBelajarInteraktif(container);
   });
 }
@@ -424,4 +436,207 @@ async function showAbstractPhase() {
       speakInstruksi(`Wah, kamu sudah sampai angka ${currentNumber}. Coba tunjukkan ke Ayah atau Ibu betapa pintarnya kamu!`);
     }, 3000);
   }
+}
+
+// ==========================================
+// GAME 4: SORTING / KLASIFIKASI (Pemecahan Masalah)
+// ==========================================
+function renderKlasifikasi(container: HTMLElement): void {
+  // Define categories (Sea vs Land)
+  const seaAnimals = ['🐟', '🐬', '🐙', '🦈', '🦀'];
+  const landAnimals = ['🐄', '🐓', '🐎', '🐅', '🐘'];
+
+  // Difficulty scaling based on currentNumber (rounds)
+  const itemsPerCategory = Math.min(2 + Math.floor((currentNumber - 1) / 2), 4);
+  let expectedTotal = itemsPerCategory * 2;
+  let sortedCount = 0;
+
+  // Generate random items for this round
+  let roundItems: { emoji: string, type: 'sea' | 'land' }[] = [];
+
+  const shuffledSea = shuffle([...seaAnimals]).slice(0, itemsPerCategory);
+  shuffledSea.forEach(emoji => roundItems.push({ emoji, type: 'sea' }));
+
+  const shuffledLand = shuffle([...landAnimals]).slice(0, itemsPerCategory);
+  shuffledLand.forEach(emoji => roundItems.push({ emoji, type: 'land' }));
+
+  roundItems = shuffle(roundItems);
+
+  container.innerHTML = `
+    <button class="back-btn" id="back-home">◀</button>
+    <div class="page-header animate-slide-up" style="padding-top:40px; text-align:center;">
+      <h1 style="color:var(--color-purple); font-size:2rem;">🧠 Klasifikasi Hewan</h1>
+      <p class="subtitle" style="font-size:1.1rem;">Pindahkan hewan ke tempat hidup aslinya!</p>
+    </div>
+    
+    <div id="play-area" class="animate-fade-in" style="position:relative; width:100%; height:380px; background:rgba(255,255,255,0.5); border-radius:20px; border:4px dashed var(--color-blue); margin-top:20px; overflow:hidden; display:flex; flex-direction:column;">
+      
+      <!-- Middle Spawn Area -->
+      <div id="spawn-area" style="flex:1; position:relative; z-index:10; border-bottom: 2px dashed #ccc;"></div>
+
+      <!-- Drop Zones container -->
+      <div style="display:flex; height:150px; width:100%;">
+        <!-- Sea Drop Zone -->
+        <div id="zone-sea" style="flex:1; background-color:#e0f7fa; border-right: 2px dashed #ccc; display:flex; justify-content:center; align-items:flex-end; padding-bottom:10px; font-size:4rem; position:relative;">
+          <div style="position:absolute; top:5px; left:50%; transform:translateX(-50%); font-size:1.2rem; font-weight:bold; color:#006064; text-transform:uppercase;">🌊 Laut</div>
+        </div>
+        
+        <!-- Land Drop Zone -->
+        <div id="zone-land" style="flex:1; background-color:#e8f5e9; display:flex; justify-content:center; align-items:flex-end; padding-bottom:10px; font-size:4rem; position:relative;">
+          <div style="position:absolute; top:5px; left:50%; transform:translateX(-50%); font-size:1.2rem; font-weight:bold; color:#1b5e20; text-transform:uppercase;">🌳 Darat</div>
+        </div>
+      </div>
+
+    </div>
+    
+    <div id="celebration-area" class="animate-bounce-in" style="display:none; text-align:center; padding: 20px;">
+        <div id="big-number" style="font-size: 5rem; line-height:1; font-weight: 900; color: var(--color-orange); text-shadow: 4px 4px 0px rgba(0,0,0,0.1);">Hebat!</div>
+        <div id="number-text" style="font-size: 2rem; font-weight: 800; color: var(--color-purple); margin-top: 10px;">Semua hewan sudah pulang!</div>
+        <button id="btn-next" class="btn btn-green animate-pulse" style="font-size:1.5rem; padding: 15px 40px; margin-top: 30px; box-shadow: 0 6px 0 #2b8a3e;">
+          Lanjut Level ▶
+        </button>
+    </div>
+  `;
+
+  document.getElementById('back-home')!.addEventListener('click', () => {
+    currentMode = 'menu';
+    renderBelajarInteraktif(container);
+  });
+
+  const playArea = document.getElementById('play-area')!;
+  const spawnArea = document.getElementById('spawn-area')!;
+  const zoneSea = document.getElementById('zone-sea')!;
+  const zoneLand = document.getElementById('zone-land')!;
+  const btnNext = document.getElementById('btn-next')!;
+
+  // Create Draggable Items
+  roundItems.forEach((itemData, index) => {
+    const item = document.createElement('div');
+    item.textContent = itemData.emoji;
+
+    // Position randomly in the spawn area (upper half)
+    const left = randRange(10, 80);
+    const top = randRange(10, 60);
+
+    item.style.position = 'absolute';
+    item.style.left = `${left}%`;
+    item.style.top = `${top}%`;
+    item.style.fontSize = '3.5rem';
+    item.style.cursor = 'grab';
+    item.style.userSelect = 'none';
+    item.style.touchAction = 'none';
+    item.style.transition = 'transform 0.1s ease-out';
+    item.classList.add('animate-bounce-in');
+    item.style.animationDelay = `${index * 0.1}s`;
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+
+    item.addEventListener('pointerdown', (e) => {
+      isDragging = true;
+      item.style.cursor = 'grabbing';
+      item.style.transform = 'scale(1.3)';
+      item.style.zIndex = '100';
+
+      startX = e.clientX;
+      startY = e.clientY;
+
+      item.style.transition = 'none';
+      initialLeft = item.offsetLeft;
+      initialTop = item.offsetTop;
+
+      item.setPointerCapture(e.pointerId);
+    });
+
+    item.addEventListener('pointermove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      item.style.left = `${initialLeft + dx}px`;
+      item.style.top = `${initialTop + dy}px`;
+    });
+
+    item.addEventListener('pointerup', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      item.style.cursor = 'grab';
+      item.style.zIndex = '1';
+      item.releasePointerCapture(e.pointerId);
+
+      const itemRect = item.getBoundingClientRect();
+      const targetZone = itemData.type === 'sea' ? zoneSea : zoneLand;
+      const wrongZone = itemData.type === 'sea' ? zoneLand : zoneSea;
+
+      const targetRect = targetZone.getBoundingClientRect();
+      const wrongRect = wrongZone.getBoundingClientRect();
+
+      // Simple overlap logic for target zone
+      const isInsideTarget = !(
+        itemRect.right < targetRect.left ||
+        itemRect.left > targetRect.right ||
+        itemRect.bottom < targetRect.top ||
+        itemRect.top > targetRect.bottom
+      );
+
+      // Overlap logic for wrong zone
+      const isInsideWrong = !(
+        itemRect.right < wrongRect.left ||
+        itemRect.left > wrongRect.right ||
+        itemRect.bottom < wrongRect.top ||
+        itemRect.top > wrongRect.bottom
+      );
+
+      if (isInsideTarget) {
+        // Correct Classification!
+        sortedCount++;
+        playSFX('pop', 0.8);
+        targetZone.style.transform = 'scale(1.05)';
+        setTimeout(() => targetZone.style.transform = 'scale(1)', 150);
+
+        // Remove item from dom visually (or append to target visually)
+        item.style.position = 'static';
+        item.style.transform = 'scale(0.8)';
+        item.style.margin = '0 -10px'; // overlap them slightly
+        targetZone.appendChild(item);
+
+        if (sortedCount === expectedTotal) {
+          playArea.style.display = 'none';
+          document.getElementById('celebration-area')!.style.display = 'block';
+          playSFX('success', 0.7);
+          fireConfetti(80);
+          speakInstruksi('Pintar sekali! Semua hewan sudah berada di tempat yang benar!');
+        }
+
+      } else if (isInsideWrong) {
+        // Wrong Classification (Bounces back!)
+        playSFX('pop', 0.3); // a dud sound ideally
+        item.style.transition = 'top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 0.4s ease';
+        item.style.transform = 'scale(1)';
+        item.style.left = `${left}%`;
+        item.style.top = `${top}%`;
+
+        wrongZone.style.transform = 'translateX(-5px)';
+        setTimeout(() => wrongZone.style.transform = 'translateX(5px)', 50);
+        setTimeout(() => wrongZone.style.transform = 'translateX(0)', 100);
+
+      } else {
+        // Just dropped in nowhere, bounce back
+        item.style.transition = 'top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), left 0.4s ease';
+        item.style.transform = 'scale(1)';
+        item.style.left = `${left}%`;
+        item.style.top = `${top}%`;
+      }
+    });
+
+    spawnArea.appendChild(item);
+  });
+
+  speakInstruksi('Ayo pindahkan hewan ke tempat hidup aslinya! Ada laut, dan ada darat.');
+
+  btnNext.addEventListener('click', () => {
+    playSFX('click');
+    currentNumber++;
+    renderBelajarInteraktif(container);
+  });
 }
