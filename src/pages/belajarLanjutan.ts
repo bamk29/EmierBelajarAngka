@@ -491,7 +491,7 @@ function renderTimbangan(container: HTMLElement): void {
                 `Seimbang! Kanan sekarang berisi ${getNamaAngka(leftCount)}, sama dengan kiri. ` +
                 `${getNamaAngka(leftCount)} sama dengan ${getNamaAngka(rightStart)} tambah ${getNamaAngka(needed)}!`
             );
-            setTimeout(() => { lanjutanRound++; renderTimbangan(container); }, 6500);
+            setTimeout(() => { lanjutanRound++; renderTimbangan(container); }, 9000);
         }
     });
 }
