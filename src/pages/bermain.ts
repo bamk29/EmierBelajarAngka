@@ -325,17 +325,26 @@ function renderPopBalon(container: HTMLElement): void {
     </div>
 
     <!--
-      Grid 3 kolom x 2 baris — setiap balon punya sel sendiri, sama sekali tidak tumpang tindih.
-      Baris 2 diberi margin-top negatif agar terlihat seperti balon mengapung di dua ketinggian berbeda.
+      Card container + Grid 3 kolom x 2 baris — setiap balon punya sel sendiri.
     -->
     <div style="
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:12px;
-      padding:16px;
-      margin-top:24px;
+      background: rgba(255,255,255,0.55);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      border: 1.5px solid rgba(255,255,255,0.7);
+      padding: 20px 16px 24px;
+      margin: 16px;
     ">
-      ${balonAngka.map((n, i) => {
+      <p style="text-align:center; font-size:0.85rem; color:var(--text-muted); font-weight:700; margin-bottom:14px; letter-spacing:0.04em;">
+        🎈 TAP BALON YANG BENAR!
+      </p>
+      <div style="
+        display:grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap:12px;
+      ">
+        ${balonAngka.map((n, i) => {
     const color = colors[i % colors.length];
     const delay = (i * 0.1).toFixed(1);
     // Baris ganjil (index 0,1,2) lebih atas; baris genap (3,4,5) lebih bawah
@@ -359,6 +368,7 @@ function renderPopBalon(container: HTMLElement): void {
           </div>
         `;
   }).join('')}
+      </div>
     </div>
   `;
 
