@@ -16,7 +16,7 @@ import { playSFX } from '../sfx';
 
 
 const EMOJIS = ['🍎', '🌟', '🐣', '🌸', '🍊', '🎈', '🦋', '🍇', '🐠', '🌺'];
-const BALLOON_COLORS = ['#FF6B6B', '#74C0FC', '#69DB7C', '#FFE066', '#DA77F2', '#FFA94D', '#F06595'];
+
 
 /** Dapatkan range angka dinamis berdasarkan bintang (sub-level) */
 function getDynamicRange(level: number): [number, number] {
@@ -294,26 +294,16 @@ function renderPopBalon(container: HTMLElement): void {
   const [min, max] = getDynamicRange(1);
   const target = randRange(min, max);
 
-  // Generate 5-7 balon dengan angka acak, pastikan target ada
-  const balonCount = randRange(5, 7);
-  const angkaList: number[] = [target];
-  while (angkaList.length < balonCount) {
-    const n = randRange(min, max);
-    angkaList.push(n);
+  // Generate 6 balon: pastikan target ada, sisanya angka acak unik
+  const balonCount = 6;
+  const angkaSet = new Set<number>([target]);
+  while (angkaSet.size < balonCount) {
+    angkaSet.add(randRange(min, max));
   }
-  const balonAngka = shuffle(angkaList);
+  const balonAngka = shuffle([...angkaSet]);
 
-  // Sistem grid dasar untuk cegah tumpukan
-  const positions: { left: number, delay: number }[] = [];
-  for (let i = 0; i < balonCount; i++) {
-    const sectionWidth = 80 / balonCount;
-    const baseLeft = 10 + (i * sectionWidth);
-    positions.push({
-      left: baseLeft + randRange(0, Math.floor(sectionWidth * 0.4)),
-      delay: i * 0.12 // Percepat munculnya
-    });
-  }
-  const randomPositions = shuffle(positions);
+  // Warna berbeda tiap balon — teks selalu putih dengan text-shadow agar kontras
+  const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e91e63'];
 
   container.innerHTML = `
     <button class="back-btn" id="back-levels">◀</button>
@@ -330,18 +320,42 @@ function renderPopBalon(container: HTMLElement): void {
       </div>
     </div>
     <div class="soal-cerita animate-slide-up" style="margin-top:16px; display:flex; flex-direction:column; align-items:center;">
-      <p style="font-size:1.3rem; font-weight:800; margin-bottom:12px;">Dengarkan & Cari Balonnya! 🎈</p>
+      <p style="font-size:1.3rem; font-weight:800; margin-bottom:12px;">Dengarkan &amp; Cari Balonnya! 🎈</p>
       <button id="btn-instruksi" class="speaker-btn" style="width:80px; height:80px; font-size:2.5rem; background:var(--color-blue); color:white; border-radius:50%; box-shadow:0 6px 15px rgba(0,0,0,0.2);">🔊</button>
     </div>
-    <div class="balloon-container mt-md">
+
+    <!--
+      Grid 3 kolom x 2 baris — setiap balon punya sel sendiri, sama sekali tidak tumpang tindih.
+      Baris 2 diberi margin-top negatif agar terlihat seperti balon mengapung di dua ketinggian berbeda.
+    -->
+    <div style="
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+      padding:16px;
+      margin-top:24px;
+    ">
       ${balonAngka.map((n, i) => {
-    const color = BALLOON_COLORS[i % BALLOON_COLORS.length];
-    const pos = randomPositions[i];
-    const speed = 1 + Math.random() * 1;
+    const color = colors[i % colors.length];
+    const delay = (i * 0.1).toFixed(1);
+    // Baris ganjil (index 0,1,2) lebih atas; baris genap (3,4,5) lebih bawah
+    const rowOffset = i < 3 ? '0px' : '28px';
     return `
-          <div class="balloon animate-balloon-rise" data-angka="${n}"
-               style="background:${color}; left:${pos.left}%; bottom:-100px; animation-delay:${pos.delay}s; --balloon-speed:${speed}s;">
-            ${n}
+          <div style="display:flex; justify-content:center; margin-top:${rowOffset};">
+            <div class="balloon animate-balloon-rise" data-angka="${n}"
+                 style="
+                   background:${color};
+                   position:relative;
+                   animation-delay:${delay}s;
+                   --balloon-speed:1.6s;
+                 ">
+              <span style="
+                font-size:1.6rem; font-weight:900;
+                color:white;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+                pointer-events:none;
+              ">${n}</span>
+            </div>
           </div>
         `;
   }).join('')}
@@ -374,6 +388,7 @@ function renderPopBalon(container: HTMLElement): void {
     });
   });
 }
+
 
 // ===== GAME 2: BANDINGKAN (Level 2) =====
 function renderBandingkan(container: HTMLElement): void {
