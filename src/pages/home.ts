@@ -5,9 +5,13 @@
 
 import { navigateTo } from '../router';
 import { speak } from '../tts';
-import { getTotalStars } from '../levels';
+import { getTotalStars, getChildProfile, updateStreak } from '../levels';
+import { showProfileModal } from '../components/ProfileModal';
 
 export function renderHome(container: HTMLElement): void {
+  updateStreak(); // Update streak saat masuk home
+  const profile = getChildProfile();
+  const name = profile.name.trim();
   const totalStars = getTotalStars();
 
   container.innerHTML = `
@@ -15,14 +19,21 @@ export function renderHome(container: HTMLElement): void {
       
       <!-- Header / Judul -->
       <div class="page-header animate-bounce-in" style="animation-delay:0s">
-        <div style="font-size:3.5rem; margin-bottom:8px;" class="animate-float">🌟</div>
-        <h1>Ayo Belajar Angka!</h1>
-        <p class="subtitle">Untuk Anak Usia 3-5 Tahun</p>
+        <div style="font-size:3.5rem; margin-bottom:8px;" class="animate-float">${profile.avatar || '🌟'}</div>
+        <h1>${name ? `Halo, ${name}! ✨` : 'Ayo Belajar Angka!'}</h1>
+        <p class="subtitle">${name ? 'Siap belajar apa hari ini?' : 'Untuk Anak Usia 3-5 Tahun'}</p>
       </div>
 
-      <!-- Total Bintang -->
-      <div class="card animate-bounce-in text-center" style="animation-delay:0.1s; width:100%; padding:12px;">
-        <span style="font-size:1.2rem;">⭐ ${totalStars} Bintang Terkumpul</span>
+      <!-- Total Bintang & Streak -->
+      <div style="display:flex; gap:12px; width:100%; justify-content:center;">
+        <div class="card animate-bounce-in text-center" style="animation-delay:0.1s; flex:1; padding:12px;">
+          <span style="font-size:1.1rem; font-weight:700;">⭐ ${totalStars}</span>
+          <div style="font-size:0.75rem; color:var(--text-light);">Bintang</div>
+        </div>
+        <div class="card animate-bounce-in text-center" style="animation-delay:0.15s; flex:1; padding:12px;">
+          <span style="font-size:1.1rem; font-weight:700;">🔥 ${profile.streak || 0}</span>
+          <div style="font-size:0.75rem; color:var(--text-light);">Hari Berturut</div>
+        </div>
       </div>
 
       <!-- 3 Tombol Menu Utama -->
@@ -69,6 +80,22 @@ export function renderHome(container: HTMLElement): void {
 
   // TTS sambutan
   setTimeout(() => {
-    speak('Halo adik-adik! Mau belajar apa hari ini?', 0.85);
+    if (name) {
+      speak(`Halo ${name}! Mau belajar apa hari ini?`, 0.85);
+    } else {
+      speak('Halo adik-adik! Mau belajar apa hari ini?', 0.85);
+    }
   }, 800);
+
+  // Jika nama kosong, munculkan modal profil setelah jeda dikit
+  if (!name) {
+    setTimeout(() => {
+      showProfileModal(container);
+    }, 1500);
+  }
+
+  // Listener untuk re-render jika profil diupdate (dari modal)
+  window.addEventListener('profile-updated', () => {
+    renderHome(container);
+  }, { once: true });
 }

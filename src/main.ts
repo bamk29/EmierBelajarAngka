@@ -11,6 +11,8 @@ import { renderBelajar } from './pages/belajar';
 import { renderUjian } from './pages/ujian';
 import { renderBermain } from './pages/bermain';
 import { renderDashboard } from './pages/dashboard';
+import { preloadSFX, playSFX } from './sfx';
+import { initScreenTime } from './screenTime';
 
 /** Container utama */
 let appEl: HTMLElement;
@@ -128,6 +130,7 @@ function createAudioToggle(): void {
     // Beri feedback suara saat dinyalakan kembali
     if (isAudioEnabled) {
       speak('Suara nyala', 1.2);
+      playSFX('click');
     }
   });
 
@@ -145,6 +148,10 @@ async function initApp(): Promise<void> {
   // Buat tombol audio global
   createAudioToggle();
 
+  // Preload SFX & Init Screen Time
+  preloadSFX();
+  initScreenTime();
+
   // Buat layar interaksi awal (Autoplay Policy requirement)
   appEl.innerHTML = `
     <div class="result-screen animate-slide-up" style="background:var(--color-bg);">
@@ -158,6 +165,7 @@ async function initApp(): Promise<void> {
 
   document.getElementById('btn-start-app')!.addEventListener('click', async () => {
     // Putar suara kosong / pendek sekadar trigger audio context unlock
+    playSFX('click');
     await speak('Halo', 1);
 
     // Setup router & render halaman awal

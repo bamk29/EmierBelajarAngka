@@ -5,7 +5,9 @@
 
 import { navigateTo } from '../router';
 import { speak } from '../tts';
-import { LEVEL_CONFIGS, loadProgress, resetProgress, getTotalStars, type MenuType } from '../levels';
+import { LEVEL_CONFIGS, loadProgress, resetProgress, getTotalStars, getChildProfile, type MenuType } from '../levels';
+import { showProfileModal } from '../components/ProfileModal';
+import { setBreakLimit } from '../screenTime';
 
 /** Render parental gate */
 export function renderDashboard(container: HTMLElement): void {
@@ -79,6 +81,20 @@ function renderDashboardContent(container: HTMLElement): void {
         <h1>📊 Dashboard Orang Tua</h1>
       </div>
 
+      <!-- Child Profile Card -->
+      <div class="card animate-bounce-in" style="padding:16px; display:flex; align-items:center; gap:16px; margin-bottom:20px;">
+        <div style="font-size:3rem; background:var(--color-blue-light); width:80px; height:80px; display:flex; align-items:center; justify-content:center; border-radius:20px;">
+          ${getChildProfile().avatar || '🦁'}
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.9rem; color:var(--text-light);">Profil Anak</div>
+          <div style="font-size:1.4rem; font-weight:800;">${getChildProfile().name || '(Belum diatur)'}</div>
+        </div>
+        <button id="btn-edit-profile" class="btn btn-sm btn-blue" style="width:auto; padding:8px 16px;">
+          📝 Ubah
+        </button>
+      </div>
+
       <!-- Total Stats -->
       <div class="stat-card animate-bounce-in">
         <span class="stat-icon">⭐</span>
@@ -116,6 +132,22 @@ function renderDashboardContent(container: HTMLElement): void {
         `;
   }).join('')}
 
+      <!-- Pengaturan -->
+      <div class="card mt-md animate-slide-up" style="padding:16px;">
+        <h3 style="font-size:1.1rem; margin-bottom:12px;">⚙️ Pengaturan</h3>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:0.9rem; margin-bottom:8px;">Batas Waktu Istirahat (Menit)</div>
+          <div style="display:flex; gap:8px;">
+            ${[10, 20, 30, 60].map(min => `
+              <button class="btn btn-sm btn-timer" data-min="${min}" 
+                      style="flex:1; padding:8px; border:2px solid #eee; background:white; color:var(--text); border-radius:10px;">
+                ${min}m
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+
       <!-- Saran -->
       <div class="card mt-md animate-slide-up" style="padding:16px;">
         <h3 style="font-size:1.1rem; margin-bottom:8px;">💡 Saran</h3>
@@ -139,6 +171,28 @@ function renderDashboardContent(container: HTMLElement): void {
       speak('Progress sudah direset');
       renderDashboardContent(container);
     }
+  });
+
+  document.getElementById('btn-edit-profile')!.addEventListener('click', () => {
+    showProfileModal(container, true);
+  });
+
+  // Re-render jika profil diupdate
+  const handleProfileUpdate = () => {
+    renderDashboardContent(container);
+  };
+  window.addEventListener('profile-updated', handleProfileUpdate, { once: true });
+
+  // Event: Update Timer
+  const timerBtns = container.querySelectorAll('.btn-timer');
+  timerBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const min = parseInt((btn as HTMLElement).dataset.min || '20');
+      setBreakLimit(min);
+      timerBtns.forEach(b => (b as HTMLElement).style.borderColor = '#eee');
+      (btn as HTMLElement).style.borderColor = 'var(--color-purple)';
+      speak(`Batas waktu diatur ${min} menit`);
+    });
   });
 }
 

@@ -4,6 +4,8 @@
  * Menjamin suara selalu Indonesia yang natural (tidak akan jadi robot bule)
  */
 
+import { getChildProfile } from './levels';
+
 /** Daftar nama angka Indonesia */
 const NAMA_ANGKA: string[] = [
   'nol', 'satu', 'dua', 'tiga', 'empat', 'lima',
@@ -12,19 +14,6 @@ const NAMA_ANGKA: string[] = [
   'enam belas', 'tujuh belas', 'delapan belas', 'sembilan belas', 'dua puluh'
 ];
 
-/** Daftar pujian acak */
-const PUJIAN: string[] = [
-  'Hebat!',
-  'Pintar sekali!',
-  'Bagus!',
-  'Benar!',
-  'Luar biasa!',
-  'Keren!',
-  'Mantap!',
-  'Anak pintar!',
-  'Sempurna!',
-  'Wah hebat sekali!'
-];
 
 /** Kalimat saat jawaban salah */
 const SALAH: string[] = [
@@ -125,7 +114,40 @@ export function speakAngkaLengkap(n: number): Promise<void> {
  * Bicara pujian acak
  */
 export function speakPujian(): Promise<void> {
-  const pujian = PUJIAN[Math.floor(Math.random() * PUJIAN.length)];
+  const profile = getChildProfile();
+  const name = profile.name.trim();
+
+  const pujianTemplates = [
+    'Hebat!',
+    'Pintar sekali!',
+    'Bagus!',
+    'Benar!',
+    'Luar biasa!',
+    'Keren!',
+    'Mantap!',
+    'Sempurna!',
+    'Wah hebat sekali!'
+  ];
+
+  let pujian = pujianTemplates[Math.floor(Math.random() * pujianTemplates.length)];
+
+  // Jika ada nama, selipkan nama di beberapa variasi
+  if (name) {
+    const coin = Math.random();
+    if (coin > 0.4) {
+      const personalTemplates = [
+        `Hebat, ${name}!`,
+        `Pintar sekali, ${name}!`,
+        `Bagus, ${name}!`,
+        `Wah, ${name} keren!`,
+        `Mantap, ${name}!`,
+        `${name} anak pintar!`,
+        `Luar biasa, ${name}!`
+      ];
+      pujian = personalTemplates[Math.floor(Math.random() * personalTemplates.length)];
+    }
+  }
+
   return speak(pujian);
 }
 

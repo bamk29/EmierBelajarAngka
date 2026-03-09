@@ -18,6 +18,14 @@ export interface MenuProgress {
     totalAnswers: number[];
 }
 
+/** Data profil anak */
+export interface ChildProfile {
+    name: string;
+    avatar: string;
+    streak: number;
+    lastPlayed: string; // ISO string
+}
+
 /** Config per level */
 export interface LevelConfig {
     /** Nama level */
@@ -107,6 +115,17 @@ export const LEVEL_CONFIGS: LevelConfig[] = [
 
 /** Key localStorage */
 const STORAGE_KEY = 'angka-app-progress';
+const PROFILE_KEY = 'angka-app-profile';
+
+/** Default profil baru */
+function defaultProfile(): ChildProfile {
+    return {
+        name: '',
+        avatar: '🦁',
+        streak: 0,
+        lastPlayed: new Date().toISOString()
+    };
+}
 
 /** Default progress baru */
 function defaultProgress(): Record<MenuType, MenuProgress> {
@@ -206,4 +225,63 @@ export function getTotalStars(): number {
 /** Reset semua progress */
 export function resetProgress(): void {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(PROFILE_KEY);
+}
+
+/** Load profil anak */
+export function getChildProfile(): ChildProfile {
+    try {
+        const data = localStorage.getItem(PROFILE_KEY);
+        if (data) return JSON.parse(data);
+    } catch (e) {
+        console.warn('Gagal load profil:', e);
+    }
+    return defaultProfile();
+}
+
+/** Simpan profil anak */
+export function saveChildProfile(profile: Partial<ChildProfile>): void {
+    try {
+        const current = getChildProfile();
+        const updated = { ...current, ...profile };
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(updated));
+    } catch (e) {
+        console.warn('Gagal simpan profil:', e);
+    }
+}
+
+/** 
+ * Update Daily Streak 
+ * Dipanggil saat aplikasi dibuka pertama kali setiap hari
+ */
+export function updateStreak(): void {
+    const profile = getChildProfile();
+    const lastPlayed = new Date(profile.lastPlayed);
+    const today = new Date();
+
+    // Set to midnight for comparison
+    const lastDate = new Date(lastPlayed.getFullYear(), lastPlayed.getMonth(), lastPlayed.getDate());
+    const currDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    const diffTime = currDate.getTime() - lastDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) {
+        // Main kemaren, streak lanjut
+        profile.streak++;
+        profile.lastPlayed = today.toISOString();
+        saveChildProfile(profile);
+    } else if (diffDays > 1) {
+        // Terlambat main, streak reset
+        profile.streak = 1;
+        profile.lastPlayed = today.toISOString();
+        saveChildProfile(profile);
+    } else if (diffDays === 0) {
+        // Sudah main hari ini, biarkan saja
+    } else {
+        // First time atau error date?
+        if (profile.streak === 0) profile.streak = 1;
+        profile.lastPlayed = today.toISOString();
+        saveChildProfile(profile);
+    }
 }

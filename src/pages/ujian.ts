@@ -9,6 +9,7 @@ import { speak, speakPujian, speakSalah, speakInstruksi, getNamaAngka } from '..
 import { LEVEL_CONFIGS, loadProgress, completeSubLevel, isLevelUnlocked } from '../levels';
 import { fireConfetti } from '../confetti';
 import { renderVisualAngka, randRange, shuffle } from '../utils';
+import { playSFX } from '../sfx';
 
 /** Tipe soal */
 interface Soal {
@@ -682,6 +683,7 @@ async function handleJawaban(btn: HTMLElement, container: HTMLElement): Promise<
   if (isCorrect) {
     btn.classList.add('correct', 'animate-correct');
     benar++;
+    playSFX('success', 0.4);
 
     // Efek confetti
     fireConfetti(50);

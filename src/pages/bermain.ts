@@ -12,6 +12,7 @@ import { speak, speakPujian, speakSalah, speakInstruksi, getNamaAngka } from '..
 import { LEVEL_CONFIGS, loadProgress, completeSubLevel, isLevelUnlocked } from '../levels';
 import { fireConfetti } from '../confetti';
 import { renderVisualAngka, randRange, shuffle } from '../utils';
+import { playSFX } from '../sfx';
 
 
 const EMOJIS = ['🍎', '🌟', '🐣', '🌸', '🍊', '🎈', '🦋', '🍇', '🐠', '🌺'];
@@ -76,7 +77,7 @@ function renderLevelSelector(container: HTMLElement): void {
     const totalStarsNeeded = cfg.requiredStars;
     const completed = stars >= totalStarsNeeded;
     const cls = !unlocked ? 'locked' : completed ? 'completed' : (lvl === mp.unlockedLevel ? 'current' : '');
-    const gameNames = ['Pop Balon', 'Bandingkan', 'Hitung Benda', 'Susun Urutan', 'Tebak Pola'];
+    const gameNames = ['Pop Balon', 'Bandingkan', 'Hitung Benda', 'Susun Urutan', 'Tebak Pola', 'Kasir Cilik'];
     return `
           <button class="level-btn animate-bounce-in ${cls}" data-level="${lvl}" ${!unlocked ? 'disabled' : ''}>
             <span class="level-icon">${cfg.icon}</span>
@@ -176,6 +177,103 @@ function renderSubLevelSelector(container: HTMLElement): void {
   speakInstruksi('Pilih bintang untuk mulai bermain.');
 }
 
+// ===== GAME 6: KASIR CILIK (Level 6) =====
+function renderKasir(container: HTMLElement): void {
+  const [minPrice, maxPrice] = getDynamicRange(6);
+
+  // Logic: Total Harga acak, Pembayar kasih uang bulat, hitung Kembalian
+  const totalPrice = randRange(minPrice, maxPrice);
+  const paymentPotentials = [5, 10, 20, 50, 100].map(v => v * Math.ceil(totalPrice / (v || 1)));
+  const payment = Math.min(...paymentPotentials.filter(p => p >= totalPrice && p <= totalPrice + 20));
+  const change = payment - totalPrice;
+
+  // Generate options for change (one is correct)
+  const options = shuffle([change, change + 1, Math.max(0, change - 1)]);
+  const uniqueOptions = [...new Set(options)];
+  while (uniqueOptions.length < 3) uniqueOptions.push(change + uniqueOptions.length + 2);
+
+  container.innerHTML = `
+    <button class="back-btn" id="back-levels">◀</button>
+    <div class="game-container animate-fade-in" style="display:flex; flex-direction:column; align-items:center; gap:20px; padding-top:40px;">
+      
+      <div class="instruction-bubble animate-bounce-in" style="width:100%; max-width:500px; text-align:center;">
+        <p style="font-size:1.5rem; font-weight:800; color:var(--color-purple);">🏪 Toko Kelontong</p>
+        <div style="font-size:1.2rem; margin:15px 0; padding:15px; background:white; border-radius:15px; border:3px dashed var(--color-blue);">
+          Total Belanja: <span style="font-size:1.6rem; color:var(--color-pink); font-weight:900;">Rp ${totalPrice}.000</span><br>
+          Dibayar: <span style="font-size:1.6rem; color:var(--color-green); font-weight:900;">Rp ${payment}.000</span>
+        </div>
+        <p style="font-size:1.1rem; font-weight:700;">Berapa uang kembaliannya?</p>
+      </div>
+
+      <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center; width:100%;">
+        ${shuffle(uniqueOptions).map(opt => `
+          <button class="ans-btn card animate-bounce-in" data-val="${opt}" 
+                  style="width:120px; padding:20px; font-size:1.3rem; font-weight:800; cursor:pointer; border:3px solid transparent; transition:0.2s;">
+            <div style="font-size:2rem; margin-bottom:5px;">💵</div>
+            Rp ${opt}.000
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="ronde-indicator">Ronde ${ronde + 1} / ${totalRonde}</div>
+    </div>
+  `;
+
+  const playInstruction = () => {
+    speakInstruksi(`Total belanjanya ${totalPrice} ribu rupiah. Pembeli membayar ${payment} ribu rupiah. Berapa kembaliannya?`);
+  };
+
+  playInstruction();
+
+  container.querySelectorAll('.ans-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const val = parseInt((btn as HTMLElement).dataset.val || '0');
+
+      if (val === change) {
+        benar++;
+        (btn as HTMLElement).style.borderColor = 'var(--color-green)';
+        (btn as HTMLElement).style.background = '#e6fffa';
+        playSFX('success', 0.5);
+        fireConfetti(30);
+        await speakPujian();
+        setTimeout(() => nextRonde(container), 1000);
+      } else {
+        (btn as HTMLElement).classList.add('animate-shake');
+        (btn as HTMLElement).style.borderColor = 'var(--color-red)';
+        playSFX('fail', 0.3);
+        await speakSalah();
+        setTimeout(() => (btn as HTMLElement).classList.remove('animate-shake'), 500);
+      }
+    });
+  });
+
+  document.getElementById('back-levels')!.addEventListener('click', () => renderLevelSelector(container));
+}
+
+// ===== GAME 5: OPERASI (Placeholder) =====
+function renderOperasi(container: HTMLElement): void {
+  container.innerHTML = `
+    <button class="back-btn" id="back-levels">◀</button>
+    <div style="padding-top:48px;">
+      <div class="text-center mb-md">
+        <span style="font-size:0.9rem; font-weight:700; color:var(--text-light);">
+          ➕ Operasi — Ronde ${ronde + 1}/${totalRonde}
+        </span>
+      </div>
+      <div class="progress-bar"><div class="fill" style="width:${((ronde + 1) / totalRonde) * 100}%"></div></div>
+      <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-light);">
+        <span>⭐ ${benar}</span><span>${ronde + 1}/${totalRonde}</span>
+      </div>
+    </div>
+    <div class="soal-cerita animate-slide-up" style="margin-top:16px;">
+      <p style="font-size:1.3rem; font-weight:800; margin-bottom:16px;">Ini adalah game Operasi!</p>
+      <p>Fitur ini akan segera hadir.</p>
+    </div>
+  `;
+  speakInstruksi('Ini adalah game Operasi. Fitur ini akan segera hadir.');
+  document.getElementById('back-levels')!.addEventListener('click', () => renderSubLevelSelector(container));
+}
+
 /** Start game sesuai level */
 function startGame(container: HTMLElement): void {
   switch (currentLevel) {
@@ -183,9 +281,9 @@ function startGame(container: HTMLElement): void {
     case 2: renderBandingkan(container); break;
     case 3: renderHitungBenda(container); break;
     case 4: renderSusunUrutan(container); break;
-    case 5: renderSusunUrutan(container); break; // Lv5 (Operasi) reuse Susun Urutan
-    case 6: renderTebakPola(container); break;
-    default: renderPopBalon(container);
+    case 5: renderOperasi(container); break;
+    case 6: renderKasir(container); break;
+    default: renderPopBalon(container); break;
   }
 }
 
@@ -442,6 +540,7 @@ function renderSusunUrutan(container: HTMLElement): void {
         if (val === nextExpected) {
           sorted.push(val);
           (btn as HTMLElement).classList.add('correct');
+          playSFX('success', 0.6);
           await speak(getNamaAngka(val), 1);
           if (sorted.length === sequence.length) {
             benar++;
@@ -453,6 +552,7 @@ function renderSusunUrutan(container: HTMLElement): void {
           }
         } else {
           (btn as HTMLElement).classList.add('animate-shake');
+          playSFX('fail', 0.3);
           await speakSalah();
           setTimeout(() => (btn as HTMLElement).classList.remove('animate-shake'), 500);
         }
